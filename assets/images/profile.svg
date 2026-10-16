@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Profile picture placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ebe8ff"/>
+      <stop offset="1" stop-color="#d4f4ee"/>
+    </linearGradient>
+    <linearGradient id="person" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9d93fb"/>
+      <stop offset="1" stop-color="#5546e8"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <circle cx="320" cy="86" r="46" fill="#ffffff" opacity="0.5"/>
+  <circle cx="74" cy="300" r="30" fill="#ffffff" opacity="0.45"/>
+  <circle cx="200" cy="162" r="70" fill="url(#person)"/>
+  <path d="M64 400c0-82 61-140 136-140s136 58 136 140z" fill="url(#person)"/>
+</svg>
