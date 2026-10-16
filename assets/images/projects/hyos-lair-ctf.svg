@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4c1d95"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <circle cx="680" cy="80" r="110" fill="#a855f7" opacity="0.35" filter="url(#glow)"/>
+  <circle cx="110" cy="440" r="110" fill="#22d3ee" opacity="0.25" filter="url(#glow)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="100" y="64" width="600" height="400" rx="16" fill="#0b1020"/>
+  </g>
+  <path d="M100 80a16 16 0 0 1 16-16h568a16 16 0 0 1 16 16v20H100z" fill="#151b30"/>
+  <circle cx="124" cy="82" r="6" fill="#ff5f57"/>
+  <circle cx="144" cy="82" r="6" fill="#febc2e"/>
+  <circle cx="164" cy="82" r="6" fill="#28c840"/>
+  <rect x="300" y="74" width="200" height="16" rx="8" fill="#232b47"/>
+
+  <!-- site header -->
+  <g font-family="Consolas, Menlo, monospace" font-weight="700">
+    <path d="M126 116v26M126 117h18l-4 6 4 6h-18" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linejoin="round"/>
+    <text x="154" y="135" font-size="17" fill="#e2e8f0">HYO'S LAIR</text>
+    <rect x="566" y="116" width="110" height="26" rx="13" fill="#1a2240" stroke="#2c3760"/>
+    <text x="621" y="134" font-size="12" fill="#facc15" text-anchor="middle">1,350 pts</text>
+  </g>
+
+  <!-- terminal -->
+  <rect x="124" y="158" width="276" height="286" rx="10" fill="#060a14" stroke="#1f2a44"/>
+  <g font-family="Consolas, Menlo, monospace" font-size="13">
+    <text x="140" y="188"><tspan fill="#4ade80">$</tspan><tspan fill="#e2e8f0"> nc lair.ctf 1337</tspan></text>
+    <text x="140" y="212" fill="#a78bfa">&gt; Welcome to Hyo's Lair</text>
+    <text x="140" y="236" fill="#64748b">&gt; challenge: who_owns_this</text>
+    <text x="140" y="270"><tspan fill="#4ade80">$</tspan><tspan fill="#e2e8f0"> exiftool clue.jpg</tspan></text>
+    <text x="140" y="294" fill="#94a3b8">GPS Position : 8.15 N</text>
+    <text x="140" y="328"><tspan fill="#4ade80">$</tspan><tspan fill="#e2e8f0"> strings crackme</tspan></text>
+    <text x="140" y="352" fill="#94a3b8">  | grep flag</text>
+    <rect x="136" y="368" width="220" height="28" rx="6" fill="#facc15" opacity="0.12"/>
+    <text x="146" y="387" fill="#facc15" font-weight="700">flag{0s1nt_1s_fun}</text>
+    <text x="140" y="424"><tspan fill="#4ade80">$</tspan></text>
+    <rect x="154" y="413" width="9" height="15" fill="#e2e8f0"/>
+  </g>
+
+  <!-- challenge cards -->
+  <g font-family="Consolas, Menlo, monospace" font-weight="700">
+    <rect x="416" y="158" width="124" height="86" rx="10" fill="#121a30" stroke="#4ade80"/>
+    <text x="430" y="184" font-size="11" fill="#22d3ee">OSINT</text>
+    <text x="430" y="212" font-size="22" fill="#e2e8f0">100</text>
+    <circle cx="520" cy="180" r="9" fill="#4ade80"/>
+    <path d="m516 180 3 3 5-6" fill="none" stroke="#060a14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="430" y="224" width="70" height="6" rx="3" fill="#24304f"/>
+
+    <rect x="552" y="158" width="124" height="86" rx="10" fill="#121a30" stroke="#24304f"/>
+    <text x="566" y="184" font-size="11" fill="#f472b6">REVERSE</text>
+    <text x="566" y="212" font-size="22" fill="#e2e8f0">300</text>
+    <rect x="566" y="224" width="80" height="6" rx="3" fill="#24304f"/>
+
+    <rect x="416" y="258" width="124" height="86" rx="10" fill="#121a30" stroke="#4ade80"/>
+    <text x="430" y="284" font-size="11" fill="#facc15">CRYPTO</text>
+    <text x="430" y="312" font-size="22" fill="#e2e8f0">200</text>
+    <circle cx="520" cy="280" r="9" fill="#4ade80"/>
+    <path d="m516 280 3 3 5-6" fill="none" stroke="#060a14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="430" y="324" width="60" height="6" rx="3" fill="#24304f"/>
+
+    <rect x="552" y="258" width="124" height="86" rx="10" fill="#121a30" stroke="#24304f"/>
+    <text x="566" y="284" font-size="11" fill="#a78bfa">FORENSICS</text>
+    <text x="566" y="312" font-size="22" fill="#e2e8f0">250</text>
+    <rect x="566" y="324" width="74" height="6" rx="3" fill="#24304f"/>
+
+    <rect x="416" y="358" width="260" height="86" rx="10" fill="#121a30" stroke="#24304f"/>
+    <text x="430" y="384" font-size="11" fill="#94a3b8">SCOREBOARD</text>
+    <rect x="430" y="398" width="200" height="8" rx="4" fill="#24304f"/>
+    <rect x="430" y="398" width="168" height="8" rx="4" fill="#a78bfa"/>
+    <rect x="430" y="416" width="200" height="8" rx="4" fill="#24304f"/>
+    <rect x="430" y="416" width="120" height="8" rx="4" fill="#22d3ee"/>
+  </g>
+</svg>

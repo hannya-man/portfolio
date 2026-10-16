@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neil Kevin La Viña | BSIT Student &amp; Software Developer</title>
+  <meta name="description" content="Portfolio of Neil Kevin La Viña, a BSIT student at La Salle University – Ozamiz who builds POS and inventory systems in Laravel and competes in cybersecurity competitions.">
+  <meta name="author" content="Neil Kevin La Viña">
+  <meta name="theme-color" content="#f6f6fb">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Neil Kevin La Viña | BSIT Student &amp; Software Developer">
+  <meta property="og:description" content="Portfolio of Neil Kevin La Viña, a BSIT student at La Salle University – Ozamiz who builds POS and inventory systems in Laravel and competes in cybersecurity competitions.">
+
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script>
+    (function () {
+      var theme = null;
+      try { theme = localStorage.getItem('theme'); } catch (e) {}
+      if (theme !== 'light' && theme !== 'dark') {
+        theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
+  <script src="js/config.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Header / Navigation  -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#home" class="logo" aria-label="Back to top">
+        <span class="logo-mark" data-bind="initials" aria-hidden="true">NK</span>
+        <span class="logo-text" data-bind="name">Neil Kevin La Viña</span>
+      </a>
+
+      <nav class="nav" id="site-nav" aria-label="Primary">
+        <ul class="nav-list">
+          <li><a class="nav-link" href="#home">Home</a></li>
+          <li><a class="nav-link" href="#about">About</a></li>
+          <li><a class="nav-link" href="#projects">Projects</a></li>
+          <li><a class="nav-link" href="#achievements">Achievements</a></li>
+          <li><a class="nav-link" href="#github">GitHub</a></li>
+          <li><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Switch to dark mode">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        </button>
+        <button class="icon-btn menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+          <span class="menu-bar"></span>
+          <span class="menu-bar"></span>
+          <span class="menu-bar"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!- Home -->
+    <section id="home" class="hero" aria-labelledby="hero-title">
+      <div class="hero-bg" aria-hidden="true">
+        <span class="blob blob-1"></span>
+        <span class="blob blob-2"></span>
+        <span class="grid-pattern"></span>
+      </div>
+
+      <div class="container hero-inner">
+        <div class="hero-content">
+          <p class="hero-badge intro" style="--i: 0" data-availability>
+            <span class="pulse-dot" aria-hidden="true"></span>
+            <span data-bind="availability">Open to software development internships</span>
+          </p>
+
+          <h1 id="hero-title" class="hero-title intro" style="--i: 1">
+            Hi, I'm <span class="gradient-text" data-bind="name">Neil Kevin La Viña</span>
+          </h1>
+
+          <p class="hero-role intro" style="--i: 2">
+            <span data-bind="rolesPrefix">I build</span>
+            <span class="typed" data-typing aria-hidden="true"></span><span class="typed-cursor" aria-hidden="true"></span>
+            <span class="visually-hidden" data-bind="rolesText"></span>
+          </p>
+
+          <p class="hero-bio intro" style="--i: 3" data-bind="bio">
+            BSIT student at La Salle University – Ozamiz. I build POS and inventory systems in Laravel for real clients and compete in cybersecurity competitions.
+          </p>
+
+          <div class="hero-actions intro" style="--i: 4">
+            <a href="#projects" class="btn btn-primary">
+              View my work
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href="#contact" class="btn btn-ghost">Get in touch</a>
+            <a class="btn btn-ghost" data-resume href="#" download hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+              Resume
+            </a>
+          </div>
+
+          <ul class="social-list intro" style="--i: 5" data-socials aria-label="Social links"></ul>
+        </div>
+
+        <div class="hero-visual intro" style="--i: 2">
+          <div class="avatar-frame">
+            <img class="avatar" data-avatar src="assets/images/profile.jpg" alt="Portrait of Neil Kevin La Viña" width="400" height="400" fetchpriority="high">
+          </div>
+
+          <div class="floating-card card-1" aria-hidden="true">
+            <span class="fc-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg>
+            </span>
+            <span class="fc-text"><small>Currently</small><span data-bind="role">BSIT Student &amp; Software Developer</span></span>
+          </div>
+
+          <div class="floating-card card-2" aria-hidden="true">
+            <span class="fc-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            <span class="fc-text"><small>Based in</small><span data-bind="location">Ozamiz City, Philippines</span></span>
+          </div>
+        </div>
+      </div>
+
+      <a href="#about" class="scroll-hint" aria-label="Scroll to the About section">
+        <span class="scroll-hint-wheel"></span>
+      </a>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="section" aria-labelledby="about-title">
+      <div class="container">
+        <header class="section-header" data-reveal>
+          <p class="eyebrow">01 &middot; About</p>
+          <h2 id="about-title" class="section-title">A little about me</h2>
+          <p class="section-subtitle">Who I am, what I'm working on, and the tools I build with.</p>
+        </header>
+
+        <div class="about-grid">
+          <div class="about-text" id="about-paragraphs" data-reveal></div>
+          <dl class="facts" id="facts" data-reveal style="--delay: 120ms"></dl>
+        </div>
+
+        <h3 class="subheading" data-reveal>Tech I work with</h3>
+        <div class="skills" id="skills"></div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="section section-alt" aria-labelledby="projects-title">
+      <div class="container">
+        <header class="section-header" data-reveal>
+          <p class="eyebrow">02 &middot; Projects</p>
+          <h2 id="projects-title" class="section-title">Things I've built</h2>
+          <p class="section-subtitle">Client systems, competition tools and side projects, from Laravel POS apps to a Unity game.</p>
+        </header>
+
+        <div class="filter-bar" id="project-filters" role="group" aria-label="Filter projects by category" hidden></div>
+        <div class="project-grid" id="project-grid">
+          <noscript><p class="repo-message">Please enable JavaScript to see my projects.</p></noscript>
+        </div>
+      </div>
+    </section>
+
+    <!-- Achievements -->
+    <section id="achievements" class="section" aria-labelledby="achievements-title">
+      <div class="container">
+        <header class="section-header" data-reveal>
+          <p class="eyebrow">03 &middot; Achievements</p>
+          <h2 id="achievements-title" class="section-title">Competitions &amp; recognition</h2>
+          <p class="section-subtitle">Cybersecurity competitions, talks and certifications. Click a photo to see it larger.</p>
+        </header>
+
+        <div class="achievement-grid" id="achievement-grid"></div>
+        <p class="photo-credit" id="photo-credit" data-reveal hidden></p>
+
+        <div class="credentials">
+          <article class="credential-card card" data-reveal>
+            <h3 class="credential-title">
+              <span class="skill-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></svg>
+              </span>
+              Certifications &amp; awards
+            </h3>
+            <ul class="credential-list" id="certifications"></ul>
+          </article>
+
+          <article class="credential-card card" data-reveal style="--delay: 100ms">
+            <h3 class="credential-title">
+              <span class="skill-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </span>
+              Leadership &amp; activities
+            </h3>
+            <ol class="timeline" id="leadership"></ol>
+          </article>
+
+          <article class="credential-card card" data-reveal style="--delay: 200ms">
+            <h3 class="credential-title">
+              <span class="skill-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.92a1 1 0 0 0-.02-1.84L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.83l8.57 3.91a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+              </span>
+              Seminars &amp; trainings
+            </h3>
+            <ul class="training-list" id="trainings"></ul>
+            <p class="credential-note" id="trainings-host" hidden></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="github" class="section section-alt" aria-labelledby="github-title">
+      <div class="container">
+        <div class="section-header-row">
+          <header class="section-header" data-reveal>
+            <p class="eyebrow">04 &middot; Open source</p>
+            <h2 id="github-title" class="section-title">Latest on GitHub</h2>
+            <p class="section-subtitle" id="repo-status">Loaded live from the GitHub API.</p>
+          </header>
+          <a class="btn btn-ghost" id="github-profile-link" href="#" target="_blank" rel="noopener noreferrer" data-reveal hidden>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            View GitHub profile
+          </a>
+        </div>
+
+        <div class="repo-grid" id="repo-grid" aria-live="polite" aria-busy="false"></div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section" aria-labelledby="contact-title">
+      <div class="container">
+        <header class="section-header" data-reveal>
+          <p class="eyebrow">05 &middot; Contact</p>
+          <h2 id="contact-title" class="section-title">Let's talk</h2>
+          <p class="section-subtitle">Send me a message and I'll get back to you as soon as I can.</p>
+        </header>
+
+        <div class="contact-grid">
+          <aside class="contact-info card" data-reveal>
+            <h3 class="contact-heading">Let's build something together</h3>
+            <p class="contact-blurb" data-bind="contactBlurb">Have an internship opening, a project idea, or just want to talk tech or CTFs? My inbox is always open.</p>
+
+            <ul class="contact-list">
+              <li class="contact-item">
+                <span class="ci-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                </span>
+                <span class="ci-text">
+                  <small>Email</small>
+                  <a href="mailto:neilkevin.lavina@lsu.edu.ph" data-email-link data-bind="email">neilkevin.lavina@lsu.edu.ph</a>
+                </span>
+              </li>
+              <li class="contact-item">
+                <span class="ci-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                </span>
+                <span class="ci-text">
+                  <small>Location</small>
+                  <span data-bind="location">Ozamiz City, Philippines</span>
+                </span>
+              </li>
+            </ul>
+
+            <div class="contact-social">
+              <small>Find me online</small>
+              <ul class="social-list" data-socials aria-label="Social links"></ul>
+            </div>
+          </aside>
+
+          <form class="contact-form card" id="contact-form" novalidate data-reveal style="--delay: 120ms">
+            <div class="form-row">
+              <div class="form-field">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" autocomplete="name" placeholder="Jane Doe" required aria-describedby="name-error">
+                <p class="field-error" id="name-error"></p>
+              </div>
+              <div class="form-field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="jane@example.com" required aria-describedby="email-error">
+                <p class="field-error" id="email-error"></p>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" rows="6" maxlength="1000" placeholder="Hi! I'd love to talk about…" required aria-describedby="message-error message-count"></textarea>
+              <div class="field-meta">
+                <p class="field-error" id="message-error"></p>
+                <span class="char-count" id="message-count">0 / 1000</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              <span class="btn-label">Send message</span>
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+              <span class="spinner" aria-hidden="true"></span>
+            </button>
+            <p class="form-note">Demo form: messages aren't emailed yet. For anything urgent, use the email address shown here.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; <span data-year>2026</span> <span data-bind="name">Neil Kevin La Viña</span>. Built with HTML, CSS &amp; vanilla JavaScript.</p>
+      <ul class="social-list social-list-sm" data-socials aria-label="Social links"></ul>
+    </div>
+  </footer>
+
+  <button class="back-to-top" type="button" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+  </button>
+
+  <dialog class="lightbox" id="lightbox" aria-labelledby="lightbox-caption">
+    <figure class="lightbox-figure">
+      <img class="lightbox-img" id="lightbox-img" alt="">
+      <figcaption class="lightbox-caption">
+        <span id="lightbox-caption"></span>
+        <span class="lightbox-counter" id="lightbox-counter"></span>
+      </figcaption>
+    </figure>
+    <button class="lightbox-btn lightbox-close" type="button" aria-label="Close photo viewer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <button class="lightbox-btn lightbox-prev" type="button" aria-label="Previous photo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button class="lightbox-btn lightbox-next" type="button" aria-label="Next photo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+  </dialog>
+
+  <div class="toast" id="toast" aria-hidden="true">
+    <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+    <div class="toast-body">
+      <p class="toast-title" id="toast-title">Message sent!</p>
+      <p class="toast-message" id="toast-message"></p>
+    </div>
+    <button class="toast-close" type="button" aria-label="Dismiss notification">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+
+  <div class="visually-hidden" id="live-region" role="status" aria-live="polite"></div>
+</body>
+</html>

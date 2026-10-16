@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7dd3fc"/>
+      <stop offset="1" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <radialGradient id="ball" cx="0.35" cy="0.3" r="0.75">
+      <stop offset="0" stop-color="#fbcfe8"/>
+      <stop offset="0.45" stop-color="#ec4899"/>
+      <stop offset="1" stop-color="#9d174d"/>
+    </radialGradient>
+    <clipPath id="screen">
+      <rect x="100" y="64" width="600" height="400" rx="16"/>
+    </clipPath>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#1e1b4b" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <circle cx="90" cy="70" r="120" fill="#ffffff" opacity="0.08"/>
+  <circle cx="720" cy="450" r="140" fill="#ffffff" opacity="0.08"/>
+
+  <g filter="url(#shadow)">
+    <rect x="100" y="64" width="600" height="400" rx="16" fill="#e0f2fe"/>
+  </g>
+
+  <g clip-path="url(#screen)">
+    <rect x="100" y="64" width="600" height="400" fill="url(#sky)"/>
+    <!-- clouds -->
+    <g fill="#ffffff" opacity="0.9">
+      <ellipse cx="200" cy="140" rx="46" ry="16"/>
+      <ellipse cx="226" cy="128" rx="28" ry="16"/>
+      <ellipse cx="590" cy="118" rx="54" ry="17"/>
+      <ellipse cx="560" cy="108" rx="28" ry="14"/>
+    </g>
+    <!-- distant islands -->
+    <path d="M100 330c60-20 120-10 170 0s110 6 160-6 140-20 270 4v136H100z" fill="#bae6fd"/>
+
+    <!-- tilted board: top face A(230,330) B(430,250) C(610,320) D(410,410) -->
+    <polygon points="230,330 410,410 410,434 230,354" fill="#15803d"/>
+    <polygon points="410,410 610,320 610,344 410,434" fill="#166534"/>
+    <polygon points="230,330 430,250 610,320 410,410" fill="#4ade80"/>
+    <!-- checker cells -->
+    <g fill="#22c55e">
+      <polygon points="230,330 280,310 325,330 275,350"/>
+      <polygon points="330,290 380,270 425,290 375,310"/>
+      <polygon points="325,330 375,310 420,330 370,350"/>
+      <polygon points="425,290 475,267.5 520,285 470,307.5"/>
+      <polygon points="275,350 325,330 370,350 320,370"/>
+      <polygon points="370,350 420,330 465,348 415,370"/>
+      <polygon points="470,307.5 520,285 565,302.5 515,325"/>
+      <polygon points="320,370 370,350 410,368 365,390"/>
+      <polygon points="415,370 465,348 510,365 460,387.5"/>
+      <polygon points="515,325 565,302.5 610,320 560,342.5"/>
+    </g>
+    <polygon points="230,330 430,250 610,320 410,410" fill="none" stroke="#166534" stroke-width="2"/>
+
+    <!-- goal gate near the back corner -->
+    <rect x="452" y="232" width="5" height="48" fill="#475569"/>
+    <rect x="512" y="250" width="5" height="48" fill="#475569"/>
+    <polygon points="452,232 517,250 517,268 452,250" fill="#ffffff"/>
+    <g fill="#111827">
+      <polygon points="452,232 465,235.6 465,253.6 452,250"/>
+      <polygon points="478,239.2 491,242.8 491,260.8 478,257.2"/>
+      <polygon points="504,246.4 517,250 517,268 504,264.4"/>
+    </g>
+
+    <!-- path + ball -->
+    <path d="M338 344 C380 320 430 300 474 280" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round" opacity="0.9"/>
+    <ellipse cx="322" cy="356" rx="30" ry="10" fill="#14532d" opacity="0.35"/>
+    <circle cx="320" cy="326" r="28" fill="url(#ball)"/>
+    <circle cx="320" cy="326" r="34" fill="#ffffff" fill-opacity="0.18" stroke="#ffffff" stroke-opacity="0.7" stroke-width="2"/>
+    <ellipse cx="309" cy="309" rx="10" ry="6" fill="#ffffff" opacity="0.7" transform="rotate(-30 309 309)"/>
+
+    <!-- tilt arrows -->
+    <g fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.85">
+      <path d="M200 270a120 60 0 0 1 40-36"/>
+      <path d="M234 226l7 8-10 3"/>
+      <path d="M640 260a120 60 0 0 0-40-36"/>
+      <path d="M606 216l-7 8 10 3"/>
+    </g>
+
+    <!-- HUD -->
+    <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="800">
+      <rect x="120" y="84" width="96" height="36" rx="18" fill="#0f172a" opacity="0.75"/>
+      <text x="168" y="108" font-size="17" fill="#ffffff" text-anchor="middle">0:42</text>
+      <rect x="566" y="84" width="114" height="36" rx="18" fill="#0f172a" opacity="0.75"/>
+      <text x="623" y="108" font-size="15" fill="#fde047" text-anchor="middle">STAGE 3</text>
+    </g>
+  </g>
+</svg>
