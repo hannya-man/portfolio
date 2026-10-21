@@ -5,7 +5,6 @@
   const root = document.documentElement;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* Helpers & icons */
   const $ = (selector, scope = document) => scope.querySelector(selector);
   const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
 
@@ -13,8 +12,9 @@
   const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
 
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+  const smooth = (t) => t * t * (3 - 2 * t);
 
-  /* if storage is blocked (e.g. private mode). */
   function getStorage(type) {
     try {
       const store = window[type];
@@ -26,7 +26,6 @@
     }
   }
 
-  /** reads a message out via the hidden live region. */
   function announce(message) {
     const region = $('#live-region');
     if (!region) return;
@@ -49,7 +48,6 @@
     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
   const fillIcon = (path) => `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${path}"/></svg>`;
 
-  // icon paths from Lucide (ISC) and Simple Icons (CC0).
   const ICONS = {
     github: fillIcon(
       'M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'
@@ -59,7 +57,7 @@
     ),
     email: strokeIcon('<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>'),
     website: strokeIcon('<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>'),
-    external: strokeIcon('<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>'),
+    external: strokeIcon('<path d="M7 17 17 7"/><path d="M7 7h10v10"/>'),
     code: strokeIcon('<path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/>'),
     book: strokeIcon('<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>'),
     star: strokeIcon('<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>'),
@@ -78,10 +76,8 @@
     expand: strokeIcon('<path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/>'),
   };
 
-  /* Content rendering */
   function renderContent() {
     const name = config.name || 'Your Name';
-    const roles = (config.roles || []).filter(Boolean);
     const values = {
       name,
       initials: config.initials || initialsFrom(name),
@@ -90,35 +86,28 @@
       email: config.email,
       availability: config.availability,
       bio: config.bio,
-      rolesPrefix: config.rolesPrefix,
-      rolesText: roles.join(', '),
       contactBlurb: config.contactBlurb,
     };
 
-    // plain text binds
     $$('[data-bind]').forEach((el) => {
       const value = values[el.dataset.bind];
       if (value) el.textContent = value;
     });
 
-    // page title & description
     document.title = config.role ? `${name} | ${config.role}` : name;
     if (config.bio) {
       $$('meta[name="description"], meta[property="og:description"]').forEach((meta) => meta.setAttribute('content', config.bio));
     }
     $('meta[property="og:title"]')?.setAttribute('content', document.title);
 
-    // availability badge
     const badge = $('[data-availability]');
     if (badge) badge.hidden = !config.availability;
 
-    // email links
     $$('[data-email-link]').forEach((link) => {
       if (config.email) link.href = `mailto:${config.email}`;
       else link.closest('.contact-item')?.setAttribute('hidden', '');
     });
 
-    // profile pic
     const avatar = $('[data-avatar]');
     if (avatar) {
       const fallback = 'assets/images/profile.svg';
@@ -126,27 +115,30 @@
       avatar.addEventListener('error', () => {
         if (!avatar.src.endsWith(fallback)) avatar.src = fallback;
       }, { once: true });
-      if (config.avatar) avatar.src = config.avatar;
+      if (config.avatar && !avatar.src.endsWith(config.avatar)) avatar.src = config.avatar;
     }
 
-    // optional resume bttn
-    const resume = $('[data-resume]');
-    if (resume && config.resume) {
-      resume.href = config.resume;
-      resume.hidden = false;
-    }
-
-    // footer year
     $$('[data-year]').forEach((el) => {
       el.textContent = new Date().getFullYear();
     });
 
+    renderStoryText();
     renderSocials();
     renderAbout();
     renderSkills();
     renderProjects();
     renderAchievements();
     renderCredentials();
+  }
+
+  function renderStoryText() {
+    const story = config.story || {};
+    $$('[data-story]').forEach((el) => {
+      const [group, field] = el.dataset.story.split('.');
+      const value = story[group] && story[group][field];
+      if (value) el.textContent = value;
+      else el.hidden = true;
+    });
   }
 
   function getSocialLinks() {
@@ -199,11 +191,11 @@
     container.innerHTML = (config.skills || [])
       .map(
         (group, index) => `
-        <article class="skill-group" data-reveal style="--delay: ${index * 110}ms">
-          <h3 class="skill-group-title">
+        <article class="skill-group" data-reveal style="--delay: ${(index % 3) * 100}ms">
+          <h4 class="skill-group-title">
             <span class="skill-icon">${ICONS[group.icon] || ICONS.code}</span>
             ${escapeHTML(group.group)}
-          </h3>
+          </h4>
           <ul class="skill-list">
             ${(group.items || []).map((item) => `<li>${escapeHTML(item)}</li>`).join('')}
           </ul>
@@ -218,7 +210,7 @@
       links.push(`<a class="text-link" href="${escapeHTML(project.demo)}" target="_blank" rel="noopener noreferrer">Live demo ${ICONS.external}<span class="visually-hidden"> of ${escapeHTML(project.title)} (opens in a new tab)</span></a>`);
     }
     if (project.repo) {
-      links.push(`<a class="text-link" href="${escapeHTML(project.repo)}" target="_blank" rel="noopener noreferrer">${ICONS.code} Source code<span class="visually-hidden"> of ${escapeHTML(project.title)} (opens in a new tab)</span></a>`);
+      links.push(`<a class="text-link" href="${escapeHTML(project.repo)}" target="_blank" rel="noopener noreferrer">Source code ${ICONS.external}<span class="visually-hidden"> of ${escapeHTML(project.title)} (opens in a new tab)</span></a>`);
     }
 
     const image = project.image
@@ -253,7 +245,6 @@
 
     grid.innerHTML = projects.map(projectCard).join('');
 
-    // category filter
     const categories = [...new Set(projects.map((project) => project.category).filter(Boolean))];
     if (!filterBar || categories.length < 2) return;
 
@@ -282,7 +273,6 @@
         if (match) {
           shown += 1;
           card.classList.add('is-visible');
-          // restart animation for the cards that stay visible
           card.classList.remove('is-filtered-in');
           void card.offsetWidth;
           card.classList.add('is-filtered-in');
@@ -328,7 +318,6 @@
     }
   }
 
-  /* list and hides its whole card when the config has no entries for it. */
   function fillList(selector, items, render) {
     const list = $(selector);
     if (!list) return;
@@ -364,46 +353,37 @@
     }
   }
 
-  /* Theme toggle */
   function initTheme() {
     const toggle = $('.theme-toggle');
     const store = getStorage('localStorage');
-    const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
     const themeColor = $('meta[name="theme-color"]');
 
     function applyTheme(theme, animate = false) {
       if (animate && !reducedMotion) {
         root.classList.add('theme-transition');
-        window.setTimeout(() => root.classList.remove('theme-transition'), 400);
+        window.setTimeout(() => root.classList.remove('theme-transition'), 450);
       }
       root.setAttribute('data-theme', theme);
       toggle?.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-      themeColor?.setAttribute('content', theme === 'dark' ? '#0b0b14' : '#f6f6fb');
+      themeColor?.setAttribute('content', theme === 'dark' ? '#050505' : '#fafafa');
     }
 
-    applyTheme(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+    applyTheme(root.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
 
     toggle?.addEventListener('click', () => {
-      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
       applyTheme(next, true);
       store?.setItem('theme', next);
     });
-
-    // follow OS setting til the visitor picks a theme themselves
-    systemDark.addEventListener('change', (event) => {
-      if (!store?.getItem('theme')) applyTheme(event.matches ? 'dark' : 'light', true);
-    });
   }
 
-  /* nav */
   function initNavigation() {
     const header = $('.site-header');
     const menuToggle = $('.menu-toggle');
     const navLinks = $$('.nav-link');
-    const progress = $('.scroll-progress');
     const backToTop = $('.back-to-top');
+    const story = $('#home');
 
-    /* menu */
     const isMenuOpen = () => header.classList.contains('menu-open');
 
     function setMenu(open) {
@@ -430,16 +410,13 @@
       if (event.matches) setMenu(false);
     });
 
-    /* Scroll effects */
     let ticking = false;
 
     function onScroll() {
       const scrolled = window.scrollY;
-      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-
+      const storyEnd = story ? story.offsetHeight - window.innerHeight : 600;
       header.classList.toggle('is-scrolled', scrolled > 8);
-      backToTop.classList.toggle('is-visible', scrolled > 600);
-      progress.style.transform = `scaleX(${scrollable > 0 ? Math.min(scrolled / scrollable, 1) : 0})`;
+      backToTop.classList.toggle('is-visible', scrolled > Math.max(600, storyEnd));
       ticking = false;
     }
 
@@ -482,46 +459,307 @@
       .forEach((section) => sectionObserver.observe(section));
   }
 
-  /* ==========================================================================
-   * 5. Hero typing effect
-   * ======================================================================== */
-  function initTyping() {
-    const target = $('[data-typing]');
-    const roles = (config.roles || []).filter(Boolean);
-    if (!target || !roles.length) return;
+  const STORY_PANELS = {
+    hero: [-1, 0, 0.07, 0.15],
+    cue: [-1, 0, 0.02, 0.06],
+    left: [0.17, 0.24, 0.36, 0.43],
+    right: [0.48, 0.55, 0.66, 0.73],
+    cta: [0.84, 0.91, 2, 2],
+  };
 
-    if (reducedMotion || roles.length === 1) {
-      target.textContent = roles[0];
+  const STORY_EXPLODE = [
+    [0, 0],
+    [0.1, 0],
+    [0.52, 1],
+    [0.7, 1],
+    [0.9, 0],
+    [1, 0],
+  ];
+
+  const STORY_CHAPTERS = {
+    wide: [
+      [0.3, { s: 0.9, x: 0.17, y: 0.07 }],
+      [0.52, { s: 0.96, x: -0.17, y: 0.02 }],
+      [0.68, { s: 0.96, x: -0.17, y: 0.02 }],
+    ],
+    narrow: [
+      [0.3, { s: 1, x: 0, y: -0.1 }],
+      [0.68, { s: 1, x: 0, y: -0.1 }],
+    ],
+  };
+
+  const ASSEMBLED_BOUNDS = { l: 0.151, t: 0.055, r: 0.968, b: 0.666 };
+
+  function alphaBounds(img) {
+    try {
+      return measureBounds(img);
+    } catch (error) {
+      return ASSEMBLED_BOUNDS;
+    }
+  }
+
+  function measureBounds(img) {
+    const scale = Math.min(1, 400 / img.naturalWidth);
+    const w = Math.max(1, Math.round(img.naturalWidth * scale));
+    const h = Math.max(1, Math.round(img.naturalHeight * scale));
+    const probe = document.createElement('canvas');
+    probe.width = w;
+    probe.height = h;
+    const pctx = probe.getContext('2d', { willReadFrequently: true });
+    pctx.drawImage(img, 0, 0, w, h);
+    const { data } = pctx.getImageData(0, 0, w, h);
+    let minX = w, minY = h, maxX = -1, maxY = -1;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        if (data[(y * w + x) * 4 + 3] > 96) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+    if (maxX < 0) return ASSEMBLED_BOUNDS;
+    return { l: minX / w, t: minY / h, r: (maxX + 1) / w, b: (maxY + 1) / h };
+  }
+
+  function sampleTrack(track, p, mix) {
+    if (p <= track[0][0]) return track[0][1];
+    for (let i = 1; i < track.length; i++) {
+      const [p1, v1] = track[i];
+      if (p <= p1) {
+        const [p0, v0] = track[i - 1];
+        return mix(v0, v1, smooth((p - p0) / (p1 - p0 || 1)));
+      }
+    }
+    return track[track.length - 1][1];
+  }
+
+  const mixNumber = (a, b, t) => a + (b - a) * t;
+  const mixLayout = (a, b, t) => ({ s: mixNumber(a.s, b.s, t), x: mixNumber(a.x, b.x, t), y: mixNumber(a.y, b.y, t) });
+
+  function panelOpacity([fadeIn, fullIn, fullOut, fadeOut], p) {
+    if (p <= fadeIn || p >= fadeOut) return 0;
+    if (p < fullIn) return smooth((p - fadeIn) / (fullIn - fadeIn));
+    if (p <= fullOut) return 1;
+    return 1 - smooth((p - fullOut) / (fadeOut - fullOut));
+  }
+
+  function finishLoading() {
+    if (!root.classList.contains('is-loading')) return;
+    root.classList.remove('is-loading');
+    const id = decodeURIComponent(location.hash.slice(1));
+    const target = id && document.getElementById(id);
+    if (target) target.scrollIntoView({ behavior: 'instant' });
+  }
+
+  function initStory() {
+    const section = $('#home');
+    const canvas = $('#story-canvas');
+    const percent = $('#loader-percent');
+    const story = config.story || {};
+    const count = Number(story.frames) || 0;
+    const ctx = canvas && canvas.getContext ? canvas.getContext('2d') : null;
+
+    if (!section || !ctx || !count || !story.path) {
+      root.classList.add('no-story');
+      finishLoading();
       return;
     }
 
-    let roleIndex = 0;
-    let charIndex = 0;
-    let deleting = false;
+    const narrowQuery = window.matchMedia('(max-width: 760px)');
+    const size = window.innerWidth <= 760 ? 'sm' : 'lg';
+    const frames = new Array(count);
+    const panels = $$('[data-panel]', section).map((el) => ({
+      el,
+      range: STORY_PANELS[el.dataset.panel] || [0, 0, 0, 0],
+      links: el.matches('a') ? [el] : $$('a, button', el),
+      active: null,
+    }));
 
-    function tick() {
-      const word = roles[roleIndex];
-      charIndex += deleting ? -1 : 1;
-      target.textContent = word.slice(0, charIndex);
+    const heroPanel = $('[data-panel="hero"]', section);
+    const ctaPanel = $('[data-panel="cta"]', section);
 
-      let delay = deleting ? 40 : 80;
-      if (!deleting && charIndex === word.length) {
-        delay = 1800; // pause on the full word
-        deleting = true;
-      } else if (deleting && charIndex === 0) {
-        deleting = false;
-        roleIndex = (roleIndex + 1) % roles.length;
-        delay = 350;
-      }
-      window.setTimeout(tick, delay);
+    let settled = 0;
+    let ready = false;
+    let current = 0;
+    let rafId = 0;
+    let view = { w: 0, h: 0, dpr: 1, narrow: false };
+    let assembled = ASSEMBLED_BOUNDS;
+    let track = [[0, { s: 1, x: 0, y: 0 }]];
+
+    const fallbackTimer = window.setTimeout(start, 15000);
+
+    function onSettled() {
+      settled += 1;
+      if (percent) percent.textContent = String(Math.round((settled / count) * 100));
+      if (settled === count) start();
     }
 
-    window.setTimeout(tick, 900); // start after the intro animation
+    for (let i = 0; i < count; i++) {
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        const decoded = img.decode ? img.decode() : Promise.resolve();
+        decoded.catch(() => {}).then(() => {
+          frames[i] = img;
+          onSettled();
+        });
+      };
+      img.onerror = onSettled;
+      img.src = `${story.path}/${size}/laptop_${String(i).padStart(3, '0')}.webp`;
+    }
+
+    function readProgress() {
+      const total = section.offsetHeight - window.innerHeight;
+      if (total <= 0) return 0;
+      return clamp(-section.getBoundingClientRect().top / total, 0, 1);
+    }
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      view = { w, h, dpr, narrow: narrowQuery.matches };
+      buildTrack();
+    }
+
+    function restingLayout(panel, bottomSpace) {
+      const img = nearestFrame(0);
+      const { w, h, narrow } = view;
+      if (!img || !w || !h) return { s: 1, x: 0, y: 0 };
+      const aspect = img.naturalWidth / img.naturalHeight;
+      const baseHeight = Math.min(w / img.naturalWidth, h / img.naturalHeight) * img.naturalHeight;
+      const relW = assembled.r - assembled.l;
+      const relH = assembled.b - assembled.t;
+      const top = panel ? panel.offsetTop + panel.offsetHeight + (narrow ? 20 : 28) : h * 0.3;
+      const room = Math.max(h - bottomSpace - top, h * 0.28);
+      const maxWidth = w * (narrow ? 0.92 : 0.5);
+      const frameH = Math.min(room / relH, maxWidth / (relW * aspect));
+      const frameW = frameH * aspect;
+      const laptopTop = top + (room - relH * frameH) / 2;
+      const frameTop = laptopTop - assembled.t * frameH;
+      const frameLeft = w / 2 - (assembled.l + relW / 2) * frameW;
+      return {
+        s: frameH / baseHeight,
+        x: (frameLeft + frameW / 2 - w / 2) / w,
+        y: (frameTop + frameH / 2 - h / 2) / h,
+      };
+    }
+
+    function buildTrack() {
+      const hero = restingLayout(heroPanel, view.narrow ? 64 : 76);
+      const cta = restingLayout(ctaPanel, view.narrow ? 28 : 40);
+      const chapters = view.narrow ? STORY_CHAPTERS.narrow : STORY_CHAPTERS.wide;
+      track = [[0, hero], [0.1, hero], ...chapters, [0.9, cta], [1, cta]];
+    }
+
+    function nearestFrame(index) {
+      if (frames[index]) return frames[index];
+      for (let d = 1; d < count; d++) {
+        if (frames[index - d]) return frames[index - d];
+        if (frames[index + d]) return frames[index + d];
+      }
+      return null;
+    }
+
+    function drawFrame(position, layout) {
+      const i0 = Math.floor(position);
+      const fraction = position - i0;
+      const a = nearestFrame(i0);
+      const b = fraction > 0.001 ? nearestFrame(Math.min(count - 1, i0 + 1)) : null;
+      if (!a) return;
+
+      const { w, h, dpr } = view;
+      const fit = Math.min(w / a.naturalWidth, h / a.naturalHeight) * layout.s;
+      const dw = a.naturalWidth * fit;
+      const dh = a.naturalHeight * fit;
+      const dx = (w - dw) / 2 + layout.x * w;
+      const dy = (h - dh) / 2 + layout.y * h;
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      ctx.imageSmoothingQuality = 'high';
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = b && b !== a ? 1 - fraction : 1;
+      ctx.drawImage(a, dx, dy, dw, dh);
+      if (b && b !== a) {
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = fraction;
+        ctx.drawImage(b, dx, dy, dw, dh);
+      }
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+      canvas.dataset.frame = String(Math.round(position));
+    }
+
+    function updatePanel(panel, p) {
+      const opacity = panelOpacity(panel.range, p);
+      const shift = (1 - opacity) * (p < panel.range[1] ? 28 : -28);
+      panel.el.style.opacity = opacity.toFixed(3);
+      panel.el.style.transform = opacity === 1 ? '' : `translate3d(0, ${shift.toFixed(1)}px, 0)`;
+      const active = opacity > 0.5;
+      if (panel.active === active) return;
+      panel.active = active;
+      panel.el.classList.toggle('is-active', active);
+      panel.links.forEach((link) => (active ? link.removeAttribute('tabindex') : link.setAttribute('tabindex', '-1')));
+    }
+
+    function render() {
+      const explode = sampleTrack(STORY_EXPLODE, current, mixNumber);
+      const layout = sampleTrack(track, current, mixLayout);
+      drawFrame(explode * (count - 1), layout);
+      panels.forEach((panel) => updatePanel(panel, current));
+    }
+
+    function tick() {
+      rafId = 0;
+      const target = readProgress();
+      const diff = target - current;
+      current = reducedMotion || Math.abs(diff) < 0.0005 ? target : current + diff * 0.14;
+      render();
+      if (current !== target) schedule();
+    }
+
+    function schedule() {
+      if (ready && !rafId) rafId = window.requestAnimationFrame(tick);
+    }
+
+    function start() {
+      if (ready) return;
+      ready = true;
+      window.clearTimeout(fallbackTimer);
+      if (!frames.some(Boolean)) {
+        root.classList.add('no-story');
+        finishLoading();
+        return;
+      }
+      assembled = alphaBounds(nearestFrame(0));
+      resize();
+      current = readProgress();
+      render();
+      finishLoading();
+      current = readProgress();
+      render();
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          buildTrack();
+          render();
+        });
+      }
+    }
+
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', () => {
+      if (!ready) return;
+      resize();
+      render();
+      schedule();
+    });
   }
 
-  /* ==========================================================================
-   * 6. Scroll reveal animations
-   * ======================================================================== */
   const revealObserver =
     'IntersectionObserver' in window && !reducedMotion
       ? new IntersectionObserver(
@@ -536,7 +774,6 @@
         )
       : null;
 
-  /** Fades elements in as they scroll into view (or shows them at once if motion is reduced). */
   function reveal(elements) {
     elements.forEach((el) => {
       if (revealObserver) revealObserver.observe(el);
@@ -549,10 +786,7 @@
     reveal($$('[data-reveal]'));
   }
 
-  /* ==========================================================================
-   * 7. GitHub repositories
-   * ======================================================================== */
-  const GITHUB_CACHE_TTL = 15 * 60 * 1000; 
+  const GITHUB_CACHE_TTL = 15 * 60 * 1000;
 
   const LANGUAGE_COLORS = {
     JavaScript: '#f1e05a',
@@ -620,7 +854,6 @@
       throw error;
     }
 
-    // Keep only the fields we render, so the cache stays small
     const repos = (await response.json()).map((repo) => ({
       name: repo.name,
       url: repo.html_url,
@@ -638,7 +871,7 @@
     try {
       cache?.setItem(cacheKey, JSON.stringify({ savedAt: Date.now(), repos }));
     } catch (error) {
-      /* storage full: skip caching */
+      cache?.removeItem(cacheKey);
     }
     return repos;
   }
@@ -706,7 +939,6 @@
         const visible = repos
           .filter((repo) => !(excludeForks && repo.fork) && !repo.archived && !excluded.has(repo.name.toLowerCase()))
           .sort((a, b) => new Date(b.pushedAt) - new Date(a.pushedAt));
-        // Fall back to the descriptions in config.js for repos without one on GitHub
         const shown = visible
           .slice(0, maxRepos)
           .map((repo) => ({ ...repo, description: repo.description || descriptions[repo.name] || '' }));
@@ -723,7 +955,7 @@
       } catch (error) {
         let reason = "Couldn't reach GitHub right now. Check your connection and try again.";
         if (error.status === 404) reason = `The GitHub user "${escapeHTML(username)}" doesn't exist. Check <code>github.username</code> in <code>js/config.js</code>.`;
-        else if (error.rateLimited) reason = 'GitHub\'s API rate limit has been reached for now. Please try again in a few minutes.';
+        else if (error.rateLimited) reason = "GitHub's API rate limit has been reached for now. Please try again in a few minutes.";
 
         status.textContent = 'My latest public repositories, loaded live from the GitHub API.';
         showMessage(
@@ -736,7 +968,6 @@
       }
     }
 
-    // Wait until the section is close to the viewport before calling the API
     if ('IntersectionObserver' in window) {
       const lazyObserver = new IntersectionObserver(
         (entries) => {
@@ -752,9 +983,6 @@
     }
   }
 
-  /* ==========================================================================
-   * 8. Contact form
-   * ======================================================================== */
   const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
   const VALIDATORS = {
@@ -774,7 +1002,6 @@
     $('#toast-message').textContent = message;
     toast.style.setProperty('--toast-duration', `${duration}ms`);
 
-    // Re-trigger the slide-in and timer bar if a toast is already showing
     toast.classList.remove('is-visible');
     void toast.offsetWidth;
     toast.classList.add('is-visible');
@@ -823,7 +1050,6 @@
     }
 
     fields.forEach((field) => {
-      // Validate when leaving a field, then live while the visitor fixes it
       field.addEventListener('blur', () => {
         if (field.value.trim()) validateField(field);
       });
@@ -852,7 +1078,6 @@
       submitButton.setAttribute('aria-disabled', 'true');
       label.textContent = 'Sending…';
 
-      // No backend is required for this challenge, so we simulate a short network request.
       await wait(900);
 
       const firstName = form.elements.name.value.trim().split(/\s+/)[0];
@@ -876,9 +1101,6 @@
     });
   }
 
-  /* ==========================================================================
-   * 9. Photo lightbox
-   * ======================================================================== */
   function initLightbox() {
     const dialog = $('#lightbox');
     if (!dialog || typeof dialog.showModal !== 'function') return;
@@ -918,7 +1140,6 @@
     nextButton.addEventListener('click', () => show(current + 1));
     $('.lightbox-close', dialog).addEventListener('click', () => dialog.close());
 
-    // Clicking the dark backdrop (outside the photo) closes the viewer
     dialog.addEventListener('click', (event) => {
       if (event.target === dialog) dialog.close();
     });
@@ -934,11 +1155,10 @@
     });
   }
 
-  /* Boot */
   renderContent();
   initTheme();
   initNavigation();
-  initTyping();
+  initStory();
   initReveal();
   initGitHub();
   initContactForm();

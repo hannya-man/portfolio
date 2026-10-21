@@ -4,10 +4,10 @@ My portfolio website for the Skills Showcase Challenge (Web Development Intern).
 
 Live site: https://hannya-man.github.io/portfolio/
 
-![Home page](screenshots/desktop-light.png)
+![Home page](screenshots/home.png)
 
 What's on it
-- Home: my photo, a short bio and links to my GitHub, LinkedIn and email
+- Home: my photo, a short bio and links to my GitHub, LinkedIn and email, followed by a laptop that comes apart and goes back together as you scroll
 - About: a bit about me and the tools I use
 - Projects: my capstone, freelance and personal projects, with demo and source links where available
 - Achievements: competitions, certifications, leadership and trainings (click a photo to see it bigger)
@@ -16,14 +16,16 @@ What's on it
 
 Other features:
 - Works on phones, tablets and desktops
-- Dark mode that remembers your choice
+- Dark by default, with a light mode toggle that remembers your choice
+- Scroll-driven laptop animation: 60 pre-rendered frames drawn on a canvas, with a loading screen while they download
 - Scroll animations and hover effects
 - Projects can be filtered by category
 
 Built with
 - HTML, CSS and JavaScript
 - GitHub REST API
-- Google Fonts (Plus Jakarta Sans and JetBrains Mono)
+- three.js (used to render the laptop animation frames)
+- Google Fonts (Geist and Geist Mono)
 
 Credits
 - Event photos from [LSU SOURCE](https://lsu-source.org), La Salle University – Ozamiz

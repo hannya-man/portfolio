@@ -9,13 +9,34 @@ window.PORTFOLIO = {
   availability: 'Open to software development internships',
 
   /* ---------- Hero ---------- */
-  rolesPrefix: 'I build',
-  roles: ['POS & inventory systems', 'Laravel web apps', 'offline-first software', 'CTF challenges'],
   bio:
     'BSIT student at La Salle University – Ozamiz. I build POS and inventory systems in Laravel ' +
     'for real clients, compete in cybersecurity competitions, and want to learn how professional ' +
     'teams plan, review and ship software.',
   resume: '',
+
+  story: {
+    frames: 60,
+    path: 'assets/sequence',
+    left: {
+      eyebrow: 'Software',
+      title: 'I build systems that run real businesses.',
+      text:
+        'POS and inventory systems in Laravel for a printing shop and a hardware store, ' +
+        'with offline-first sync so a sale never waits for the internet.',
+    },
+    right: {
+      eyebrow: 'Hardware',
+      title: "And I know what's inside.",
+      text:
+        "I'm TESDA NC II certified in Computer System Servicing. From the logic board " +
+        'to the database, I like understanding every layer.',
+    },
+    cta: {
+      title: "Let's build something.",
+      text: 'Here are the projects, competitions and code behind it.',
+    },
+  },
 
   /* ---------- Links ---------- */
   socials: {
@@ -161,10 +182,11 @@ window.PORTFOLIO = {
       role: 'Skills showcase',
       category: 'Web',
       description:
-        "The site you're looking at: a responsive single-page portfolio with dark mode, scroll " +
-        'animations, a photo lightbox, a validated contact form and live repositories from the GitHub API.',
+        "The site you're looking at: a single-page portfolio with a scroll-driven 3D laptop that " +
+        'comes apart and goes back together, dark mode, a photo lightbox, a validated contact form ' +
+        'and live repositories from the GitHub API.',
       tech: ['HTML', 'CSS', 'JavaScript', 'GitHub API'],
-      image: 'assets/images/projects/portfolio.svg',
+      image: 'assets/images/projects/portfolio.jpg',
       demo: 'https://hannya-man.github.io/portfolio/',
       repo: 'https://github.com/hannya-man/portfolio',
     },
