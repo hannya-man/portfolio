@@ -476,19 +476,7 @@
     [1, 0],
   ];
 
-  const STORY_CHAPTERS = {
-    wide: [
-      [0.3, { s: 0.9, x: 0.17, y: 0.07 }],
-      [0.52, { s: 0.96, x: -0.17, y: 0.02 }],
-      [0.68, { s: 0.96, x: -0.17, y: 0.02 }],
-    ],
-    narrow: [
-      [0.3, { s: 1, x: 0, y: -0.1 }],
-      [0.68, { s: 1, x: 0, y: -0.1 }],
-    ],
-  };
-
-  const ASSEMBLED_BOUNDS = { l: 0.151, t: 0.055, r: 0.968, b: 0.666 };
+  const ASSEMBLED_BOUNDS = { l: 0.215, t: 0.351, r: 0.795, b: 0.877 };
 
   function alphaBounds(img) {
     try {
@@ -508,19 +496,22 @@
     const pctx = probe.getContext('2d', { willReadFrequently: true });
     pctx.drawImage(img, 0, 0, w, h);
     const { data } = pctx.getImageData(0, 0, w, h);
-    let minX = w, minY = h, maxX = -1, maxY = -1;
+    const cols = new Uint16Array(w);
+    const rows = new Uint16Array(h);
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
         if (data[(y * w + x) * 4 + 3] > 96) {
-          if (x < minX) minX = x;
-          if (x > maxX) maxX = x;
-          if (y < minY) minY = y;
-          if (y > maxY) maxY = y;
+          cols[x] += 1;
+          rows[y] += 1;
         }
       }
     }
-    if (maxX < 0) return ASSEMBLED_BOUNDS;
-    return { l: minX / w, t: minY / h, r: (maxX + 1) / w, b: (maxY + 1) / h };
+    const minCount = Math.max(4, Math.round(h * 0.02));
+    const first = (arr) => arr.findIndex((n) => n >= minCount);
+    const last = (arr) => arr.length - 1 - [...arr].reverse().findIndex((n) => n >= minCount);
+    const minX = first(cols), minY = first(rows);
+    if (minX < 0 || minY < 0) return ASSEMBLED_BOUNDS;
+    return { l: minX / w, t: minY / h, r: (last(cols) + 1) / w, b: (last(rows) + 1) / h };
   }
 
   function sampleTrack(track, p, mix) {
@@ -586,6 +577,7 @@
     let rafId = 0;
     let view = { w: 0, h: 0, dpr: 1, narrow: false };
     let assembled = ASSEMBLED_BOUNDS;
+    let exploded = { l: 0, t: 0, r: 1, b: 1 };
     let track = [[0, { s: 1, x: 0, y: 0 }]];
 
     const fallbackTimer = window.setTimeout(start, 15000);
@@ -607,7 +599,7 @@
         });
       };
       img.onerror = onSettled;
-      img.src = `${story.path}/${size}/laptop_${String(i).padStart(3, '0')}.webp`;
+      img.src = `${story.path}/${size}/${story.prefix || 'frame'}_${String(i).padStart(3, '0')}.webp`;
     }
 
     function readProgress() {
@@ -626,22 +618,18 @@
       buildTrack();
     }
 
-    function restingLayout(panel, bottomSpace) {
+    function fitContent(bounds, box, align = 0.5) {
       const img = nearestFrame(0);
-      const { w, h, narrow } = view;
+      const { w, h } = view;
       if (!img || !w || !h) return { s: 1, x: 0, y: 0 };
       const aspect = img.naturalWidth / img.naturalHeight;
       const baseHeight = Math.min(w / img.naturalWidth, h / img.naturalHeight) * img.naturalHeight;
-      const relW = assembled.r - assembled.l;
-      const relH = assembled.b - assembled.t;
-      const top = panel ? panel.offsetTop + panel.offsetHeight + (narrow ? 20 : 28) : h * 0.3;
-      const room = Math.max(h - bottomSpace - top, h * 0.28);
-      const maxWidth = w * (narrow ? 0.92 : 0.5);
-      const frameH = Math.min(room / relH, maxWidth / (relW * aspect));
+      const relW = bounds.r - bounds.l;
+      const relH = bounds.b - bounds.t;
+      const frameH = Math.min((box.b - box.t) / relH, (box.r - box.l) / (relW * aspect));
       const frameW = frameH * aspect;
-      const laptopTop = top + (room - relH * frameH) / 2;
-      const frameTop = laptopTop - assembled.t * frameH;
-      const frameLeft = w / 2 - (assembled.l + relW / 2) * frameW;
+      const frameLeft = (box.l + box.r) / 2 - (bounds.l + relW / 2) * frameW;
+      const frameTop = box.t + (box.b - box.t - relH * frameH) * align - bounds.t * frameH;
       return {
         s: frameH / baseHeight,
         x: (frameLeft + frameW / 2 - w / 2) / w,
@@ -649,10 +637,36 @@
       };
     }
 
+    function restingLayout(panel, bottomSpace) {
+      const { w, h, narrow } = view;
+      const top = panel ? panel.offsetTop + panel.offsetHeight + (narrow ? 20 : 28) : h * 0.3;
+      const room = Math.max(h - bottomSpace - top, h * 0.28);
+      const maxWidth = w * (narrow ? 0.92 : 0.5);
+      return fitContent(assembled, { l: (w - maxWidth) / 2, r: (w + maxWidth) / 2, t: top, b: top + room });
+    }
+
     function buildTrack() {
-      const hero = restingLayout(heroPanel, view.narrow ? 64 : 76);
-      const cta = restingLayout(ctaPanel, view.narrow ? 28 : 40);
-      const chapters = view.narrow ? STORY_CHAPTERS.narrow : STORY_CHAPTERS.wide;
+      const { w, h, narrow } = view;
+      const headerHeight = $('.site-header')?.offsetHeight || 64;
+      const hero = restingLayout(heroPanel, narrow ? 64 : 76);
+      const cta = restingLayout(ctaPanel, narrow ? 28 : 40);
+      let chapters;
+      if (narrow) {
+        const textTops = $$('.story-side', section).map((panel) => {
+          const copy = $('.story-copy', panel);
+          return copy ? panel.offsetTop + copy.offsetTop : h * 0.6;
+        });
+        const textTop = Math.min(h * 0.75, ...textTops);
+        const above = fitContent(exploded, { l: 12, r: w - 12, t: headerHeight + 16, b: Math.max(headerHeight + 160, textTop - 24) }, 0.7);
+        chapters = [[0.3, above], [0.68, above]];
+      } else {
+        const margin = Math.max(20, (w - 1120) / 2);
+        const top = headerHeight + 40;
+        const bottom = h - 40;
+        const right = fitContent(exploded, { l: w * 0.42, r: Math.min(w - 16, w - margin + 40), t: top, b: bottom });
+        const left = fitContent(exploded, { l: Math.max(16, margin - 40), r: w * 0.58, t: top, b: bottom });
+        chapters = [[0.3, right], [0.52, left], [0.68, left]];
+      }
       track = [[0, hero], [0.1, hero], ...chapters, [0.9, cta], [1, cta]];
     }
 
@@ -737,6 +751,7 @@
         return;
       }
       assembled = alphaBounds(nearestFrame(0));
+      exploded = alphaBounds(nearestFrame(count - 1));
       resize();
       current = readProgress();
       render();
