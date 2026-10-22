@@ -1,0 +1,402 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>html, body { margin: 0; background: transparent; }</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+</head>
+<body>
+<script type="module">
+import * as THREE from 'three';
+
+const params = new URLSearchParams(location.search);
+const num = (key, fallback) => (params.has(key) ? Number(params.get(key)) : fallback);
+const W = num('w', 1600);
+const H = num('h', 1000);
+const SS = num('ss', 1.5);
+
+let seed = num('seed', 1618);
+const rand = () => {
+  seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+const smoothstep = (a, b, v) => {
+  const t = Math.min(1, Math.max(0, (v - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+};
+const clamp01 = (x) => Math.min(1, Math.max(0, x));
+const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+const deg = THREE.MathUtils.degToRad;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H, false);
+if (params.get('bg')) renderer.setClearColor(new THREE.Color('#' + params.get('bg')), 1);
+else renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = params.get('tm') === 'agx' ? THREE.AgXToneMapping : THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = num('exposure', 1.0);
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+
+function studioEnvironment() {
+  const env = new THREE.Scene();
+  const domeGeo = new THREE.SphereGeometry(40, 64, 32);
+  const p = domeGeo.getAttribute('position');
+  const low = new THREE.Color(0x030303), high = new THREE.Color(0x191613);
+  const c = new THREE.Color();
+  const colors = [];
+  for (let i = 0; i < p.count; i++) {
+    c.copy(low).lerp(high, smoothstep(-25, 35, p.getY(i)));
+    colors.push(c.r, c.g, c.b);
+  }
+  domeGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  env.add(new THREE.Mesh(domeGeo, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide })));
+  const panel = (w, h, pos, intensity, tint = 0xffffff) => {
+    const mesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(w, h),
+      new THREE.MeshBasicMaterial({ color: new THREE.Color(tint).multiplyScalar(intensity), side: THREE.DoubleSide })
+    );
+    mesh.position.set(...pos);
+    mesh.lookAt(0, 0, 0);
+    env.add(mesh);
+  };
+  panel(20, 2.4, [0, 15, 4], num('top', 13));
+  panel(2.4, 18, [-15, 2, 7], num('left', 10));
+  panel(2.4, 18, [15, 0, 4], num('right', 8));
+  panel(22, 7, [0, 4, -16], num('back', 4));
+  panel(12, 8, [4, 3, 16], num('front', 3));
+  panel(34, 34, [0, -15, 0], num('floor', 0.7), 0xffd9a3);
+  panel(3.5, 3.5, [-7, 10, 13], num('spot', 14));
+  return pmrem.fromScene(env, num('blur', 0.012)).texture;
+}
+scene.environment = studioEnvironment();
+
+const camera = new THREE.PerspectiveCamera(num('fov', 24), W / H, 0.1, 200);
+const elevation = deg(num('elev', 14));
+const distance = num('dist', 15);
+camera.position.set(0, distance * Math.sin(elevation), distance * Math.cos(elevation));
+camera.lookAt(0, 0, 0);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x1a1410, num('hemi', 0.2)));
+const key = new THREE.DirectionalLight(0xfff2dc, num('key', 1.4));
+key.position.set(-5, 7, 8);
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xffffff, num('rim', 2.0));
+rim.position.set(6, 4, -7);
+scene.add(rim);
+const kick = new THREE.DirectionalLight(0xffe6c0, num('kick', 1.0));
+kick.position.set(7, -3, 5);
+scene.add(kick);
+
+const mat = {
+  gold: new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#' + (params.get('gold') || 'ffc85e')), metalness: 1, roughness: num('rough', 0.14), envMapIntensity: num('env', 1.0) }),
+  satin: new THREE.MeshPhysicalMaterial({ color: 0xe8b75a, metalness: 1, roughness: num('satin', 0.36), envMapIntensity: 0.95 }),
+  collar: new THREE.MeshPhysicalMaterial({ color: 0xdcaa4b, metalness: 1, roughness: 0.2, envMapIntensity: 1.0 }),
+  bore: new THREE.MeshStandardMaterial({ color: 0x0b0806, metalness: 0.6, roughness: 0.55, envMapIntensity: 0.4 }),
+  onyx: new THREE.MeshPhysicalMaterial({ color: 0x050505, metalness: 0, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.06, envMapIntensity: 1.2 }),
+};
+
+const A = num('A', 2.15);
+const B = num('B', 1.62);
+const HZ = num('hz', 0.42);
+const R = num('R', 0.24);
+
+class LoopCurve extends THREE.Curve {
+  getPoint(u, target = new THREE.Vector3()) {
+    const t = u * Math.PI * 2;
+    const s = Math.sin(t), c = Math.cos(t);
+    return target.set(A * c, B * s * c, HZ * s);
+  }
+}
+const loop = new LoopCurve();
+loop.arcLengthDivisions = 6000;
+const NS = num('samples', 3000);
+const frames = loop.computeFrenetFrames(NS, true);
+const wrap = (u) => ((u % 1) + 1) % 1;
+
+function frameAt(u) {
+  const f = wrap(u) * NS;
+  const i = Math.min(NS - 1, Math.floor(f));
+  const k = f - i;
+  const T = frames.tangents[i].clone().lerp(frames.tangents[i + 1], k).normalize();
+  const N = frames.normals[i].clone().lerp(frames.normals[i + 1], k);
+  N.addScaledVector(T, -N.dot(T)).normalize();
+  const Bn = new THREE.Vector3().crossVectors(T, N);
+  return { P: loop.getPointAt(wrap(u)), T, N, B: Bn };
+}
+
+const model = new THREE.Group();
+model.rotation.order = 'YXZ';
+scene.add(model);
+
+const parts = [];
+function part(object, { offset = [0, 0, 0], rotation = null, t0 = 0, t1 = 1 } = {}) {
+  model.add(object);
+  parts.push({ object, base: object.position.clone(), offset: new THREE.Vector3(...offset), t0, t1, q0: object.quaternion.clone(), q1: rotation ? rotation.multiply(object.quaternion.clone()) : null });
+  return object;
+}
+
+const RS = num('radial', 72);
+const NSEG = num('links', 10);
+const GAP = num('gap', 0.0008);
+const BEVEL = num('bevel', 0.035);
+const BEVEL_LEN = num('bevelLen', 0.022);
+const FLUTE = num('flute', 0);
+const FLUTES = num('flutes', 12);
+const TWIST = num('twist', 6);
+
+const profileRadius = (phi, u) => R * (1 + FLUTE * Math.cos(FLUTES * (phi + TWIST * u * Math.PI * 2)));
+const bevelScale = (s) => {
+  const d = Math.min(1, Math.min(s, 1 - s) / BEVEL_LEN);
+  return 1 - BEVEL * (1 - Math.sqrt(Math.max(0, 1 - (1 - d) * (1 - d))));
+};
+
+function sampleList() {
+  const list = new Set();
+  const uniform = num('along', 150);
+  for (let j = 0; j <= uniform; j++) list.add(+(j / uniform).toFixed(6));
+  for (let j = 0; j <= 18; j++) {
+    const a = (BEVEL_LEN * j) / 18;
+    list.add(+a.toFixed(6));
+    list.add(+(1 - a).toFixed(6));
+  }
+  return [...list].sort((a, b) => a - b);
+}
+const SAMPLES = sampleList();
+
+function segmentGeometry(u0, u1) {
+  const pos = [], idx = [];
+  const rows = SAMPLES.length;
+  const ringFrames = [];
+  for (const s of SAMPLES) {
+    const u = u0 + (u1 - u0) * s;
+    const f = frameAt(u);
+    ringFrames.push(f);
+    const k = bevelScale(s);
+    for (let i = 0; i < RS; i++) {
+      const phi = (i / RS) * Math.PI * 2;
+      const r = profileRadius(phi, u) * k;
+      const cx = Math.cos(phi) * r, cy = Math.sin(phi) * r;
+      pos.push(
+        f.P.x + f.N.x * cx + f.B.x * cy,
+        f.P.y + f.N.y * cx + f.B.y * cy,
+        f.P.z + f.N.z * cx + f.B.z * cy
+      );
+    }
+  }
+  for (let j = 0; j < rows - 1; j++) {
+    for (let i = 0; i < RS; i++) {
+      const a = j * RS + i, b = (j + 1) * RS + i, c = (j + 1) * RS + ((i + 1) % RS), d = j * RS + ((i + 1) % RS);
+      idx.push(a, d, b, d, c, b);
+    }
+  }
+  const sideCount = idx.length;
+  const BORE = R * num('bore', 0.58);
+  const boreIdx = [];
+  for (const end of [0, rows - 1]) {
+    const f = ringFrames[end];
+    const outer = pos.length / 3;
+    for (let i = 0; i < RS; i++) {
+      const o = (end * RS + i) * 3;
+      pos.push(pos[o], pos[o + 1], pos[o + 2]);
+    }
+    const inner = pos.length / 3;
+    for (let i = 0; i < RS; i++) {
+      const phi = (i / RS) * Math.PI * 2;
+      const cx = Math.cos(phi) * BORE, cy = Math.sin(phi) * BORE;
+      pos.push(f.P.x + f.N.x * cx + f.B.x * cy, f.P.y + f.N.y * cx + f.B.y * cy, f.P.z + f.N.z * cx + f.B.z * cy);
+    }
+    const center = pos.length / 3;
+    pos.push(f.P.x, f.P.y, f.P.z);
+    const disc = pos.length / 3;
+    for (let i = 0; i < RS; i++) {
+      const o = (inner + i) * 3;
+      pos.push(pos[o], pos[o + 1], pos[o + 2]);
+    }
+    for (let i = 0; i < RS; i++) {
+      const o0 = outer + i, o1 = outer + ((i + 1) % RS);
+      const i0 = inner + i, i1 = inner + ((i + 1) % RS);
+      const d0 = disc + i, d1 = disc + ((i + 1) % RS);
+      if (end === 0) {
+        idx.push(i0, o1, o0, i0, i1, o1);
+        boreIdx.push(center, d1, d0);
+      } else {
+        idx.push(i0, o0, o1, i0, o1, i1);
+        boreIdx.push(center, d0, d1);
+      }
+    }
+  }
+  const capCount = idx.length - sideCount;
+  idx.push(...boreIdx);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setIndex(idx);
+  g.addGroup(0, sideCount, 0);
+  g.addGroup(sideCount, capCount, 1);
+  g.addGroup(sideCount + capCount, boreIdx.length, 2);
+  g.computeVertexNormals();
+  return g;
+}
+
+const SX = num('sx', 0.19), SY = num('sy', 0.55), SZ = num('sz', 1.1);
+for (let k = 0; k < NSEG; k++) {
+  const u0 = k / NSEG + GAP / 2;
+  const u1 = (k + 1) / NSEG - GAP / 2;
+  const g = segmentGeometry(u0, u1);
+  g.computeBoundingBox();
+  const mid = frameAt((u0 + u1) / 2);
+  const centroid = mid.P.clone();
+  g.translate(-centroid.x, -centroid.y, -centroid.z);
+  const mesh = new THREE.Mesh(g, [mat.gold, mat.satin, mat.bore]);
+  mesh.position.copy(centroid);
+  const roll = new THREE.Quaternion().setFromAxisAngle(mid.T, (rand() - 0.5) * num('rollAmt', 0.3));
+  const tilt = new THREE.Quaternion().setFromAxisAngle(mid.N, (rand() - 0.5) * num('tiltAmt', 0.08));
+  const t0 = 0.03 + 0.24 * (k / NSEG);
+  part(mesh, {
+    offset: [centroid.x * SX, centroid.y * SY, centroid.z * SZ + (rand() - 0.5) * num('zJit', 0.16)],
+    rotation: roll.multiply(tilt),
+    t0,
+    t1: Math.min(1, t0 + 0.62),
+  });
+}
+
+const core = new THREE.Mesh(new THREE.TubeGeometry(loop, 1600, R * num('coreR', 0.5), 40, true), mat.onyx);
+model.add(core);
+
+const collarGeo = new THREE.TorusGeometry(R * 0.6, R * 0.075, 20, 72);
+const zAxis = new THREE.Vector3(0, 0, 1);
+const collars = [];
+for (let k = 0; k < NSEG; k++) {
+  const f = frameAt(k / NSEG);
+  const collar = new THREE.Mesh(collarGeo, mat.collar);
+  collar.position.copy(f.P);
+  collar.quaternion.setFromUnitVectors(zAxis, f.T);
+  collar.userData.t0 = 0.03 + 0.24 * (((k - 0.5 + NSEG) % NSEG) / NSEG);
+  model.add(collar);
+  collars.push(collar);
+}
+
+if (num('helix', 1)) {
+  const turns = num('turns', 46);
+  const coreRadius = R * num('coreR', 0.5);
+  const wireR = num('wireR', 0.011);
+  const pts = [];
+  const steps = 2400;
+  for (let i = 0; i < steps; i++) {
+    const u = i / steps;
+    const f = frameAt(u);
+    const a = u * Math.PI * 2 * turns;
+    pts.push(f.P.clone().addScaledVector(f.N, Math.cos(a) * (coreRadius + wireR * 0.6)).addScaledVector(f.B, Math.sin(a) * (coreRadius + wireR * 0.6)));
+  }
+  const helixCurve = new THREE.CatmullRomCurve3(pts, true, 'centripetal');
+  model.add(new THREE.Mesh(new THREE.TubeGeometry(helixCurve, 4800, wireR, 8, true), mat.collar));
+}
+
+const dust = [];
+const dustGeo = new THREE.OctahedronGeometry(1, 0);
+for (let i = 0; i < num('dust', 26); i++) {
+  const f = frameAt(rand());
+  const ang = rand() * Math.PI * 2;
+  const r = R * (1.5 + rand() * 2.2);
+  const start = f.P.clone().addScaledVector(f.N, Math.cos(ang) * r).addScaledVector(f.B, Math.sin(ang) * r);
+  const drift = new THREE.Vector3(start.x * SX * 1.4, start.y * SY * 1.3, start.z * SZ + (rand() - 0.5) * 1.2);
+  const mesh = new THREE.Mesh(dustGeo, mat.gold);
+  mesh.userData = { start, drift, size: 0.01 + rand() * 0.02, spin: new THREE.Vector3(rand() * 5, rand() * 5, rand() * 5), delay: 0.14 + rand() * 0.3 };
+  model.add(mesh);
+  dust.push(mesh);
+}
+
+const yaw0 = deg(num('yaw0', -12)), yaw1 = deg(num('yaw1', 10));
+const pitch0 = deg(num('pitch0', -20)), pitch1 = deg(num('pitch1', -26));
+const roll0 = deg(num('roll0', 0)), roll1 = deg(num('roll1', 3));
+
+function pose(t) {
+  for (const p of parts) {
+    const k = ease(clamp01((t - p.t0) / (p.t1 - p.t0)));
+    p.object.position.copy(p.base).addScaledVector(p.offset, k);
+    if (p.q1) p.object.quaternion.slerpQuaternions(p.q0, p.q1, k);
+  }
+  for (const c of collars) {
+    const k = smoothstep(c.userData.t0, c.userData.t0 + 0.2, t);
+    c.visible = k > 0.001;
+    c.scale.setScalar(0.6 + 0.4 * k);
+  }
+  for (const m of dust) {
+    const { start, drift, size, spin, delay } = m.userData;
+    const k = smoothstep(delay, delay + 0.42, t);
+    m.visible = k > 0.001;
+    m.scale.setScalar(size * k);
+    m.position.copy(start).addScaledVector(drift, k);
+    m.rotation.set(spin.x * k, spin.y * k, spin.z * k);
+  }
+  const e = ease(t);
+  model.rotation.set(pitch0 + (pitch1 - pitch0) * e, yaw0 + (yaw1 - yaw0) * e, roll0 + (roll1 - roll0) * e);
+}
+
+let outW = W, outH = H;
+window.setCrop = (crop, outWidth) => {
+  outW = outWidth;
+  outH = Math.round(outWidth * crop.h / crop.w);
+  renderer.setSize(Math.round(outW * SS), Math.round(outH * SS), false);
+  camera.aspect = outW / outH;
+  camera.setViewOffset(W, H, crop.x, crop.y, crop.w, crop.h);
+  camera.updateProjectionMatrix();
+  return { width: outW, height: outH };
+};
+
+const big = document.createElement('canvas');
+const bigCtx = big.getContext('2d');
+const small = document.createElement('canvas');
+const smallCtx = small.getContext('2d');
+
+window.renderFrame = (t, { quality = 0.82, smallWidth = 0, smallQuality = quality, format = 'image/webp' } = {}) => {
+  pose(t);
+  renderer.render(scene, camera);
+  let source = renderer.domElement;
+  if (SS !== 1) {
+    big.width = outW;
+    big.height = outH;
+    bigCtx.clearRect(0, 0, outW, outH);
+    bigCtx.imageSmoothingQuality = 'high';
+    bigCtx.drawImage(renderer.domElement, 0, 0, outW, outH);
+    source = big;
+  }
+  const out = { large: source.toDataURL(format, quality) };
+  if (smallWidth) {
+    small.width = smallWidth;
+    small.height = Math.round(smallWidth * source.height / source.width);
+    smallCtx.clearRect(0, 0, small.width, small.height);
+    smallCtx.imageSmoothingQuality = 'high';
+    smallCtx.drawImage(source, 0, 0, small.width, small.height);
+    out.small = small.toDataURL(format, smallQuality);
+  }
+  return out;
+};
+
+window.contentBounds = () => {
+  const gl = renderer.getContext();
+  const w = renderer.domElement.width, h = renderer.domElement.height;
+  const px = new Uint8Array(w * h * 4);
+  gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, px);
+  let minX = w, minY = h, maxX = -1, maxY = -1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (px[(y * w + x) * 4 + 3] > 90) {
+      if (x < minX) minX = x; if (x > maxX) maxX = x;
+      if (y < minY) minY = y; if (y > maxY) maxY = y;
+    }
+  }
+  return { minX, maxX, minY: h - 1 - maxY, maxY: h - 1 - minY };
+};
+
+window.stats = () => ({ segments: NSEG, ringSamples: SAMPLES.length, radial: RS });
+window.ready = true;
+</script>
+</body>
+</html>

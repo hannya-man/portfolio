@@ -18,6 +18,7 @@ window.PORTFOLIO = {
   story: {
     frames: 60,
     path: 'assets/sequence',
+    prefix: 'infinity',
     left: {
       eyebrow: 'Software',
       title: 'I build systems that run real businesses.',
@@ -26,11 +27,11 @@ window.PORTFOLIO = {
         'with offline-first sync so a sale never waits for the internet.',
     },
     right: {
-      eyebrow: 'Hardware',
-      title: "And I know what's inside.",
+      eyebrow: 'Cybersecurity',
+      title: 'I break things to make them stronger.',
       text:
-        "I'm TESDA NC II certified in Computer System Servicing. From the logic board " +
-        'to the database, I like understanding every layer.',
+        'I compete in CTFs and write OSINT and reverse engineering challenges. ' +
+        "My team placed 2nd at the Philippine Army's TRON CUP 2026 qualifiers.",
     },
     cta: {
       title: "Let's build something.",
@@ -182,9 +183,9 @@ window.PORTFOLIO = {
       role: 'Skills showcase',
       category: 'Web',
       description:
-        "The site you're looking at: a single-page portfolio with a scroll-driven 3D laptop that " +
-        'comes apart and goes back together, dark mode, a photo lightbox, a validated contact form ' +
-        'and live repositories from the GitHub API.',
+        "The site you're looking at: a single-page portfolio with a scroll-driven 3D gold infinity loop " +
+        'that comes apart to show its core and locks back together, dark mode, a photo lightbox, a ' +
+        'validated contact form and live repositories from the GitHub API.',
       tech: ['HTML', 'CSS', 'JavaScript', 'GitHub API'],
       image: 'assets/images/projects/portfolio.jpg',
       demo: 'https://hannya-man.github.io/portfolio/',
