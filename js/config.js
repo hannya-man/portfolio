@@ -115,6 +115,20 @@ window.PORTFOLIO = {
 
   projects: [
     {
+      title: 'IRIDESCENT Concept Ad',
+      role: 'Creative concept',
+      category: 'Web',
+      description:
+        'A scroll-driven landing page concept for IRIDESCENT, a clothing label. As you scroll, a liquid chrome ' +
+        'scarab burns away into violet particles that swirl and pull back together into a glass shield. ' +
+        'One GSAP timeline drives custom GLSL shaders, the scarab is built entirely in code, and quality ' +
+        'scales down for phones and weak GPUs.',
+      tech: ['Next.js', 'TypeScript', 'Three.js', 'React Three Fiber', 'GLSL', 'GSAP'],
+      image: 'assets/images/projects/iridescent.jpg',
+      demo: 'https://iridescent-concept-ad.vercel.app',
+      repo: '',
+    },
+    {
       title: 'Marcomedia Website & Inventory System',
       role: 'Capstone project',
       category: 'Web',
