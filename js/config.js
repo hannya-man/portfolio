@@ -56,6 +56,7 @@ window.PORTFOLIO = {
       'hardware-pos': 'Offline-first POS and inventory system for RRC Merchandise, a hardware and construction supply store.',
       'Marcomedia-Tangub': 'POS and inventory system for Marcomedia, a printing and photography shop in Tangub City.',
       Marcomedia: 'Earlier version of the Marcomedia POS and website.',
+      'Wrecking-Ball': 'Super Monkey Ball-style rolling game in Unity 6 with 10 stages and code-generated UI and audio.',
     },
   },
 
@@ -185,12 +186,14 @@ window.PORTFOLIO = {
       role: 'Game developer',
       category: 'Game',
       description:
-        'A Super Monkey Ball-style game where you tilt the board and let gravity roll the ball ' +
-        'through each stage to the goal.',
-      tech: ['Unity', 'C#'],
-      image: 'assets/images/projects/wrecking-ball.svg',
+        'A Super Monkey Ball-style game where you tilt the world to roll a hamster in a glass ball ' +
+        'through 10 stages, grabbing energy and beating the clock to the goal. The UI, music, sound ' +
+        'effects, hamster and stage geometry are all generated in code, and an editor tool rebuilds ' +
+        'every stage scene from its layout script.',
+      tech: ['Unity 6', 'C#', 'URP', 'Input System'],
+      image: 'assets/images/projects/wrecking-ball.jpg',
       demo: '',
-      repo: '',
+      repo: 'https://github.com/hannya-man/Wrecking-Ball',
     },
     {
       title: 'Personal Portfolio',
