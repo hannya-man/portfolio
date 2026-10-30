@@ -57,6 +57,7 @@ window.PORTFOLIO = {
       'Marcomedia-Tangub': 'POS and inventory system for Marcomedia, a printing and photography shop in Tangub City.',
       Marcomedia: 'Earlier version of the Marcomedia POS and website.',
       'Wrecking-Ball': 'Super Monkey Ball-style rolling game in Unity 6 with 10 stages and code-generated UI and audio.',
+      'oud-voyager': 'Scroll-driven 3D concept page for Oud Voyager: a code-built bottle, a red peony and a particle burst.',
     },
   },
 
@@ -127,6 +128,20 @@ window.PORTFOLIO = {
       tech: ['Next.js', 'TypeScript', 'Three.js', 'React Three Fiber', 'GLSL', 'GSAP'],
       image: 'assets/images/projects/iridescent.jpg',
       demo: 'https://iridescent-concept-ad.vercel.app',
+      repo: '',
+    },
+    {
+      title: 'Oud Voyager Concept Ad',
+      role: 'Creative concept',
+      category: 'Web',
+      description:
+        "A scroll-driven 3D concept page for Tom Ford's Oud Voyager perfume. A bottle built entirely in code " +
+        'rises from a red peony, loses its cap, burns away into violet particles with a custom dissolve shader, ' +
+        'and re-forms in a still life of oud wood and geranium. Unofficial and not affiliated with Tom Ford.',
+      tech: ['Next.js', 'TypeScript', 'Three.js', 'React Three Fiber', 'GLSL', 'GSAP'],
+      image: 'assets/images/projects/oud-voyager.jpg',
+      demo: 'https://oud-voyager.vercel.app',
+      repo: 'https://github.com/hannya-man/oud-voyager',
       repo: '',
     },
     {
