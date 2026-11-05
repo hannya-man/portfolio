@@ -23,7 +23,7 @@ window.PORTFOLIO = {
       eyebrow: 'Software',
       title: 'I build systems that run real businesses.',
       text:
-        'POS and inventory systems in Laravel for a printing shop and a hardware store, ' +
+        'POS and inventory systems for a printing shop and a hardware store, ' +
         'with offline-first sync so a sale never waits for the internet.',
     },
     right: {
@@ -50,7 +50,7 @@ window.PORTFOLIO = {
     username: 'hannya-man',
     maxRepos: 6,
     excludeForks: true,
-    exclude: ['hyewonn777'], // hide repos
+    exclude: ['hyewonn777', 'music-logos'], // hide repos
     // shows when a repo has no desc. on GitHub
     descriptions: {
       'hardware-pos': 'Offline-first POS and inventory system for RRC Merchandise, a hardware and construction supply store.',
@@ -83,7 +83,7 @@ window.PORTFOLIO = {
     {
       group: 'Languages',
       icon: 'code',
-      items: ['PHP', 'JavaScript', 'TypeScript', 'Python', 'C#', 'C++', 'HTML', 'CSS'],
+      items: ['PHP', 'JavaScript', 'TypeScript', 'Python', 'Kotlin', 'Swift', 'C#', 'C++', 'HTML', 'CSS'],
     },
     {
       group: 'Web Development',
@@ -116,6 +116,20 @@ window.PORTFOLIO = {
   ],
 
   projects: [
+    {
+      title: 'Kiku',
+      role: 'Personal project',
+      category: 'Mobile',
+      description:
+        'A music player for Android and iPhone, for the music on your own phone. Lyrics find themselves and ' +
+        'scroll in time, a visualizer and equalizer run on the actual audio, and glass surfaces run throughout. ' +
+        'It also has a Soulseek client written from the protocol documentation. Each platform is its own native ' +
+        'app, and since I develop on Windows, GitHub Actions builds the iPhone version and tours it on a simulator.',
+      tech: ['Kotlin', 'Jetpack Compose', 'Swift', 'SwiftUI', 'GitHub Actions'],
+      image: 'assets/images/projects/kiku.jpg',
+      demo: '',
+      repo: '',
+    },
     {
       title: 'IRIDESCENT Concept Ad',
       role: 'Creative concept',
@@ -163,11 +177,12 @@ window.PORTFOLIO = {
       role: 'Freelance project',
       category: 'Web',
       description:
-        'An offline-first POS and inventory system for RRC Merchandise, a hardware and construction supply store. ' +
-        'Cashiers keep ringing up sales without internet, and an outbox queue with exponential backoff ' +
-        'and idempotent upserts syncs everything once the connection is back. Includes a stock movement ' +
-        'ledger, PIN login for staff and TOTP two-factor authentication for the owner.',
-      tech: ['Laravel', 'PostgreSQL', 'Vite', 'JavaScript', 'Dexie.js (IndexedDB)'],
+        'An offline-first POS and inventory system for RRC Merchandise, a hardware and construction supply store, ' +
+        'installable on Android and iPhone. Cashiers keep ringing up sales without internet, and an outbox queue ' +
+        'with exponential backoff and idempotent upserts syncs everything once the connection is back. Includes a ' +
+        'stock movement ledger, credit sales, sales reports, a customer screen for a second monitor, search in ' +
+        'English or Bisaya, PIN login for staff and TOTP two-factor authentication for the owner.',
+      tech: ['Supabase', 'PostgreSQL', 'Vite', 'JavaScript', 'Dexie.js (IndexedDB)'],
       image: 'assets/images/projects/rrc-merchandise-pos.svg',
       demo: 'https://hannya-man.github.io/hardware-pos/',
       repo: 'https://github.com/hannya-man/hardware-pos',
@@ -208,7 +223,7 @@ window.PORTFOLIO = {
       tech: ['Unity 6', 'C#', 'URP', 'Input System'],
       image: 'assets/images/projects/wrecking-ball.jpg',
       demo: '',
-      repo: 'https://github.com/hannya-man/Wrecking-Ball',
+      repo: '',
     },
     {
       title: 'Personal Portfolio',
