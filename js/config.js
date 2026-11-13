@@ -155,7 +155,6 @@ window.PORTFOLIO = {
       tech: ['Next.js', 'TypeScript', 'Three.js', 'React Three Fiber', 'GLSL', 'GSAP'],
       image: 'assets/images/projects/oud-voyager.jpg',
       demo: 'https://oud-voyager.vercel.app',
-      repo: 'https://github.com/hannya-man/oud-voyager',
       repo: '',
     },
     {
@@ -169,7 +168,7 @@ window.PORTFOLIO = {
         'pending, processing and completed with voiding rules and Chart.js reports.',
       tech: ['Laravel', 'MySQL', 'Tailwind CSS', 'Alpine.js', 'Chart.js'],
       image: 'assets/images/projects/marcomedia.jpg',
-      demo: 'https://marcomedia-tangub.vercel.app',
+      demo: 'https://www.marcomedia.shop',
       repo: 'https://github.com/hannya-man/Marcomedia-Tangub',
     },
     {
